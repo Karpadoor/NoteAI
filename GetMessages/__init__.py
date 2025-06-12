@@ -2,7 +2,7 @@ import azure.functions as func
 import os
 import json
 import pyodbc
-import uuid
+import ProjectHandler
 
 APPLICATION_JSON = "application/json"
 
@@ -18,40 +18,34 @@ def main(GetMessages: func.HttpRequest) -> func.HttpResponse:
                 mimetype=APPLICATION_JSON
             )
 
-        # Validate GUIDs
+        # Use the shared validation and existence check
         try:
-            uuid.UUID(str(project_id))
-            uuid.UUID(str(thread_id))
-        except (ValueError, TypeError):
+            ProjectHandler.check_thread_exists(thread_id, project_id)
+        except ValueError as ve:
             return func.HttpResponse(
-                json.dumps({"error": "'projectId' and 'threadId' must be valid GUIDs."}),
-                status_code=400,
+                json.dumps({"error": str(ve)}),
+                status_code=400 if "valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
+                mimetype=APPLICATION_JSON
+            )
+        except Exception as e:
+            return func.HttpResponse(
+                json.dumps({"error": str(e)}),
+                status_code=500,
                 mimetype=APPLICATION_JSON
             )
 
-        # Get connection string from environment variable
-        conn_str = os.environ.get("SQL_CONNECTION_STRING")
-        if not conn_str:
+        # Get connection string using the shared function
+        try:
+            conn_str = ProjectHandler.get_sql_connection_string()
+        except Exception as e:
             return func.HttpResponse(
-                json.dumps({"error": "SQL_CONNECTION_STRING not set."}),
+                json.dumps({"error": str(e)}),
                 status_code=500,
                 mimetype=APPLICATION_JSON
             )
 
         with pyodbc.connect(conn_str) as conn:
             cursor = conn.cursor()
-            # Check if thread exists for the given project
-            cursor.execute(
-                "SELECT 1 FROM [NoteAI].[Threads] WHERE ID = ? AND [Project] = ? AND SYS_DELETED IS NULL",
-                (thread_id, project_id)
-            )
-            if not cursor.fetchone():
-                return func.HttpResponse(
-                    json.dumps({"error": "Thread does not exist for the given project."}),
-                    status_code=404,
-                    mimetype=APPLICATION_JSON
-                )
-
             # Query messages for the given thread
             query = """
                 SELECT [Thread], [Message], [Role], [SYS_INSERT]
