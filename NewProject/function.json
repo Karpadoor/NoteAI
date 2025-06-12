@@ -1,0 +1,17 @@
+{
+    "bindings": [
+        {
+            "name": "NewProject",
+            "type": "httpTrigger",
+            "authLevel": "function",
+            "direction": "in",
+            "route": "projects/new",
+            "methods": ["post"]
+        },
+        {
+            "type": "http",
+            "direction": "out",
+            "name": "$return"
+        }
+    ]
+}

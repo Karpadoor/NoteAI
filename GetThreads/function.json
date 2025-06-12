@@ -1,0 +1,17 @@
+{
+    "bindings": [
+        {
+            "name": "GetThreads",
+            "type": "httpTrigger",
+            "authLevel": "function",
+            "direction": "in",
+            "route": "projects/{projectId}/threads",
+            "methods": ["get"]
+        },
+        {
+            "type": "http",
+            "direction": "out",
+            "name": "$return"
+        }
+    ]
+}

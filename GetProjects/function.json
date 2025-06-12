@@ -1,0 +1,17 @@
+{
+    "bindings": [
+        {
+            "name": "GetProjects",
+            "type": "httpTrigger",
+            "authLevel": "function",
+            "direction": "in",
+            "route": "projects",
+            "methods": ["get"]
+        },
+        {
+            "type": "http",
+            "direction": "out",
+            "name": "$return"
+        }
+    ]
+}

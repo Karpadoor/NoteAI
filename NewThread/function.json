@@ -1,0 +1,17 @@
+{
+    "bindings": [
+        {
+            "name": "NewThread",
+            "type": "httpTrigger",
+            "authLevel": "function",
+            "direction": "in",
+            "route": "projects/{projectId}/threads/new",
+            "methods": ["post"]
+        },
+        {
+            "type": "http",
+            "direction": "out",
+            "name": "$return"
+        }
+    ]
+}
