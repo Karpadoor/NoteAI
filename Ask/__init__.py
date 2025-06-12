@@ -1,37 +1,35 @@
 import azure.functions as func
-import os
 import json
 import pyodbc
-import uuid
+import project_handler
 
 APPLICATION_JSON = "application/json"
 
-def main(Ask: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Get Project ID and Thread ID from route parameters
-        project_id = Ask.route_params.get("projectId")
-        thread_id = Ask.route_params.get("threadId")
-        if not project_id or not thread_id:
+        project_id = req.route_params.get("projectId")
+        thread_id = req.route_params.get("threadId")
+
+        # Use the shared validation and existence check (handles all validation)
+        try:
+            project_handler.check_thread_exists(thread_id, project_id)
+        except ValueError as ve:
             return func.HttpResponse(
-                json.dumps({"error": "Missing 'projectId' or 'threadId' in route parameters."}),
-                status_code=400,
+                json.dumps({"error": str(ve)}),
+                status_code=400 if "not a valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
                 mimetype=APPLICATION_JSON
             )
-
-        # Validate GUIDs
-        try:
-            uuid.UUID(str(project_id))
-            uuid.UUID(str(thread_id))
-        except (ValueError, TypeError):
+        except Exception as e:
             return func.HttpResponse(
-                json.dumps({"error": "'projectId' and 'threadId' must be valid GUIDs."}),
-                status_code=400,
+                json.dumps({"error": str(e)}),
+                status_code=500,
                 mimetype=APPLICATION_JSON
             )
 
         # Parse request body for message content
         try:
-            req_body = Ask.get_json()
+            req_body = req.get_json()
             message_content = req_body.get("Message")
         except Exception:
             message_content = None
@@ -43,11 +41,11 @@ def main(Ask: func.HttpRequest) -> func.HttpResponse:
                 mimetype=APPLICATION_JSON
             )
 
-        # Get connection string from environment variable
-        conn_str = os.environ.get("SQL_CONNECTION_STRING")
-        if not conn_str:
+        try:
+            conn_str = project_handler.get_sql_connection_string()
+        except Exception as e:
             return func.HttpResponse(
-                json.dumps({"error": "SQL_CONNECTION_STRING not set."}),
+                json.dumps({"error": str(e)}),
                 status_code=500,
                 mimetype=APPLICATION_JSON
             )

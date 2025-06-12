@@ -1,7 +1,7 @@
 import azure.functions as func
 import json
 import pyodbc
-import ProjectHandler
+import project_handler
 
 APPLICATION_JSON = "application/json"
 
@@ -12,7 +12,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         # Use shared validation and existence check
         try:
-            ProjectHandler.check_project_exists(project_id)
+            project_handler.check_project_exists(project_id)
         except ValueError as ve:
             return func.HttpResponse(
                 json.dumps({"error": str(ve)}),
@@ -28,7 +28,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         
         # Get connection string using the shared function
         try:
-            conn_str = ProjectHandler.get_sql_connection_string()
+            conn_str = project_handler.get_sql_connection_string()
         except Exception as e:
             return func.HttpResponse(
                 json.dumps({"error": str(e)}),

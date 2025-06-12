@@ -1,7 +1,7 @@
 import logging
 import pyodbc
 import json
-import ProjectHandler
+import project_handler
 
 class MemoryHandlerError(Exception):
     pass
@@ -11,8 +11,8 @@ def get_memory(project_id):
     Fetch the JSON field from the latest (highest Version) record for the given project.
     Raises MemoryHandlerError if connection string is missing or no memory is found.
     """
-    ProjectHandler.check_project_exists(project_id)
-    conn_str = ProjectHandler.get_sql_connection_string()
+    project_handler.check_project_exists(project_id)
+    conn_str = project_handler.get_sql_connection_string()
 
     try:
         with pyodbc.connect(conn_str) as conn:
@@ -40,8 +40,8 @@ def set_memory(project_id, memory_json):
     with Version = last version for this project + 1.
     Raises MemoryHandlerError on failure.
     """
-    ProjectHandler.check_project_exists(project_id)
-    conn_str = ProjectHandler.get_sql_connection_string()
+    project_handler.check_project_exists(project_id)
+    conn_str = project_handler.get_sql_connection_string()
 
     # Validate JSON
     try:

@@ -1,7 +1,7 @@
 {
     "bindings": [
         {
-            "name": "Ask",
+            "name": "req",
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",

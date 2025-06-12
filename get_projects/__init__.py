@@ -1,7 +1,7 @@
 import azure.functions as func
 import json
 import pyodbc
-from ProjectHandler import get_sql_connection_string
+from project_handler import get_sql_connection_string
 
 APPLICATION_JSON = "application/json"
 
