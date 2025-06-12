@@ -2,6 +2,7 @@ import azure.functions as func
 import json
 import pyodbc
 from project_handler import get_sql_connection_string
+from memory_handler import set_memory
 
 APPLICATION_JSON = "application/json"
 
@@ -34,6 +35,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         if new_id_row:
             new_id = new_id_row[0]
+            # Set the new project ID in memory
+            set_memory(new_id, '{}')
             return func.HttpResponse(
                 json.dumps({"Project": new_id}),
                 status_code=201,
