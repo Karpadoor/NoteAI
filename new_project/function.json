@@ -1,12 +1,12 @@
 {
     "bindings": [
         {
-            "name": "GetMessages",
+            "name": "req",
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",
-            "route": "projects/{projectId}/threads/{threadId}",
-            "methods": ["get"]
+            "route": "projects/new",
+            "methods": ["post"]
         },
         {
             "type": "http",

@@ -1,14 +1,14 @@
 import azure.functions as func
-import os
 import json
 import pyodbc
+from project_handler import get_sql_connection_string
 
 APPLICATION_JSON = "application/json"
 
-def main(NewProject: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Parse request body
-        req_body = NewProject.get_json()
+        req_body = req.get_json()
         name = req_body.get("Name")
         if not name:
             return func.HttpResponse(
@@ -17,11 +17,12 @@ def main(NewProject: func.HttpRequest) -> func.HttpResponse:
                 mimetype=APPLICATION_JSON
             )
 
-        # Get connection string from environment variable
-        conn_str = os.environ.get("SQL_CONNECTION_STRING")
-        if not conn_str:
+        # Get connection string using the shared function
+        try:
+            conn_str = get_sql_connection_string()
+        except Exception as e:
             return func.HttpResponse(
-                json.dumps({"error": "SQL_CONNECTION_STRING not set."}),
+                json.dumps({"error": str(e)}),
                 status_code=500,
                 mimetype=APPLICATION_JSON
             )

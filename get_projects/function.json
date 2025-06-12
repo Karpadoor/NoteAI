@@ -1,11 +1,11 @@
 {
     "bindings": [
         {
-            "name": "GetThreads",
+            "name": "req",
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",
-            "route": "projects/{projectId}/threads",
+            "route": "projects",
             "methods": ["get"]
         },
         {

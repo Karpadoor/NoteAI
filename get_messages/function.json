@@ -1,12 +1,12 @@
 {
     "bindings": [
         {
-            "name": "NewProject",
+            "name": "req",
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",
-            "route": "projects/new",
-            "methods": ["post"]
+            "route": "projects/{projectId}/threads/{threadId}",
+            "methods": ["get"]
         },
         {
             "type": "http",

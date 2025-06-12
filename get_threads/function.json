@@ -1,12 +1,12 @@
 {
     "bindings": [
         {
-            "name": "Ask",
+            "name": "req",
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",
-            "route": "projects/{projectId}/threads/{threadId}/ask",
-            "methods": ["post"]
+            "route": "projects/{projectId}/threads",
+            "methods": ["get"]
         },
         {
             "type": "http",
