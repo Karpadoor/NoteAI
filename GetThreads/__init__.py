@@ -1,8 +1,7 @@
 import azure.functions as func
-import os
 import json
 import pyodbc
-import uuid
+import ProjectHandler
 
 APPLICATION_JSON = "application/json"
 
@@ -10,46 +9,35 @@ def main(GetThreads: func.HttpRequest) -> func.HttpResponse:
     try:
         # Get Project ID from route parameters
         project_id = GetThreads.route_params.get("projectId")
-        if not project_id:
+
+        # Use shared validation and existence check
+        try:
+            ProjectHandler.check_project_exists(project_id)
+        except ValueError as ve:
             return func.HttpResponse(
-                json.dumps({"error": "Missing 'projectId' in route parameters."}),
-                status_code=400,
+                json.dumps({"error": str(ve)}),
+                status_code=400 if "not a valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
+                mimetype=APPLICATION_JSON
+            )
+        except Exception as e:
+            return func.HttpResponse(
+                json.dumps({"error": str(e)}),
+                status_code=500,
                 mimetype=APPLICATION_JSON
             )
 
-        # Validate project_id is a GUID
+        # Get connection string using the shared function
         try:
-            uuid.UUID(str(project_id))
-        except (ValueError, TypeError):
+            conn_str = ProjectHandler.get_sql_connection_string()
+        except Exception as e:
             return func.HttpResponse(
-                json.dumps({"error": "'projectId' must be a valid GUID."}),
-                status_code=400,
-                mimetype=APPLICATION_JSON
-            )
-        
-        # Get connection string from environment variable
-        conn_str = os.environ.get("SQL_CONNECTION_STRING")
-        if not conn_str:
-            return func.HttpResponse(
-                json.dumps({"error": "SQL_CONNECTION_STRING not set."}),
+                json.dumps({"error": str(e)}),
                 status_code=500,
                 mimetype=APPLICATION_JSON
             )
 
         with pyodbc.connect(conn_str) as conn:
             cursor = conn.cursor()
-            # Check if project exists
-            cursor.execute(
-                "SELECT 1 FROM [NoteAI].[Projects] WHERE ID = ? AND SYS_DELETED IS NULL",
-                (project_id,)
-            )
-            if not cursor.fetchone():
-                return func.HttpResponse(
-                    json.dumps({"error": "Project does not exist."}),
-                    status_code=404,
-                    mimetype=APPLICATION_JSON
-                )
-
             # Query threads for the given project
             query = """
                 SELECT ID, Name, SYS_INSERT
