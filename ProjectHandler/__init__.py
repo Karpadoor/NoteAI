@@ -1,6 +1,7 @@
 import logging
 import os
 import pyodbc
+import uuid
 
 def get_sql_connection_string():
     """
@@ -16,8 +17,14 @@ def get_sql_connection_string():
 def check_project_exists(project_id):
     """
     Check if a project exists in the database.
-    Raises an exception if the connection string is missing or if the project does not exist.
+    Raises an exception if the connection string is missing, if the project_id is not a valid GUID,
+    or if the project does not exist.
     """
+    try:
+        uuid.UUID(str(project_id))
+    except (ValueError, TypeError):
+        raise ValueError(f"project_id '{project_id}' is not a valid GUID.")
+
     conn_str = get_sql_connection_string()
     try:
         with pyodbc.connect(conn_str) as conn:
@@ -34,8 +41,18 @@ def check_project_exists(project_id):
 def check_thread_exists(thread_id, project_id):
     """
     Check if a thread exists in the database for a given project.
-    Raises an exception if the connection string is missing or if the thread does not exist.
+    Raises an exception if the connection string is missing, if the thread_id or project_id is not a valid GUID,
+    or if the thread does not exist.
     """
+    try:
+        uuid.UUID(str(thread_id))
+    except (ValueError, TypeError):
+        raise ValueError(f"thread_id '{thread_id}' is not a valid GUID.")
+    try:
+        uuid.UUID(str(project_id))
+    except (ValueError, TypeError):
+        raise ValueError(f"project_id '{project_id}' is not a valid GUID.")
+
     conn_str = get_sql_connection_string()
     try:
         with pyodbc.connect(conn_str) as conn:
