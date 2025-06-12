@@ -17,9 +17,11 @@ def get_sql_connection_string():
 def check_project_exists(project_id):
     """
     Check if a project exists in the database.
-    Raises an exception if the connection string is missing, if the project_id is not a valid GUID,
+    Raises an exception if the connection string is missing, if the project_id is not provided or not a valid GUID,
     or if the project does not exist.
     """
+    if not project_id or not str(project_id).strip():
+        raise ValueError("project_id must be provided and not empty.")
     try:
         uuid.UUID(str(project_id))
     except (ValueError, TypeError):
@@ -41,9 +43,13 @@ def check_project_exists(project_id):
 def check_thread_exists(thread_id, project_id):
     """
     Check if a thread exists in the database for a given project.
-    Raises an exception if the connection string is missing, if the thread_id or project_id is not a valid GUID,
+    Raises an exception if the connection string is missing, if the thread_id or project_id is not provided or not a valid GUID,
     or if the thread does not exist.
     """
+    if not thread_id or not str(thread_id).strip():
+        raise ValueError("thread_id must be provided and not empty.")
+    if not project_id or not str(project_id).strip():
+        raise ValueError("project_id must be provided and not empty.")
     try:
         uuid.UUID(str(thread_id))
     except (ValueError, TypeError):
