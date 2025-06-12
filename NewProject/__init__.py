@@ -5,10 +5,10 @@ from ProjectHandler import get_sql_connection_string
 
 APPLICATION_JSON = "application/json"
 
-def main(NewProject: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Parse request body
-        req_body = NewProject.get_json()
+        req_body = req.get_json()
         name = req_body.get("Name")
         if not name:
             return func.HttpResponse(

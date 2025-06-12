@@ -5,7 +5,8 @@ from ProjectHandler import get_sql_connection_string
 
 APPLICATION_JSON = "application/json"
 
-def main(GetProjects: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    _ = req
     try:
         # Get connection string using the shared function
         try:

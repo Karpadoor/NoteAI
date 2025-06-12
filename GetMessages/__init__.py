@@ -5,11 +5,11 @@ import ProjectHandler
 
 APPLICATION_JSON = "application/json"
 
-def main(GetMessages: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Get Project ID and Thread ID from route parameters
-        project_id = GetMessages.route_params.get("projectId")
-        thread_id = GetMessages.route_params.get("threadId")
+        project_id = req.route_params.get("projectId")
+        thread_id = req.route_params.get("threadId")
 
         # Use the shared validation and existence check (handles all validation)
         try:

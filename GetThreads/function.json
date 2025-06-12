@@ -1,7 +1,7 @@
 {
     "bindings": [
         {
-            "name": "GetThreads",
+            "name": "req",
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",
