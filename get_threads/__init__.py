@@ -19,22 +19,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 status_code=400 if "not a valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
                 mimetype=APPLICATION_JSON
             )
-        except Exception as e:
-            return func.HttpResponse(
-                json.dumps({"error": str(e)}),
-                status_code=500,
-                mimetype=APPLICATION_JSON
-            )
 
         # Get connection string using the shared function
-        try:
-            conn_str = project_handler.get_sql_connection_string()
-        except Exception as e:
-            return func.HttpResponse(
-                json.dumps({"error": str(e)}),
-                status_code=500,
-                mimetype=APPLICATION_JSON
-            )
+        conn_str = project_handler.get_sql_connection_string()
 
         with pyodbc.connect(conn_str) as conn:
             cursor = conn.cursor()

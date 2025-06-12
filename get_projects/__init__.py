@@ -9,14 +9,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     _ = req
     try:
         # Get connection string using the shared function
-        try:
-            conn_str = get_sql_connection_string()
-        except Exception as e:
-            return func.HttpResponse(
-                json.dumps({"error": str(e)}),
-                status_code=500,
-                mimetype=APPLICATION_JSON
-            )
+        conn_str = get_sql_connection_string()
 
         # Connect to SQL Server
         with pyodbc.connect(conn_str) as conn:
