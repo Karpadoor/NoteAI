@@ -1,5 +1,4 @@
 import azure.functions as func
-import os
 import json
 import pyodbc
 import ProjectHandler
@@ -11,20 +10,14 @@ def main(GetMessages: func.HttpRequest) -> func.HttpResponse:
         # Get Project ID and Thread ID from route parameters
         project_id = GetMessages.route_params.get("projectId")
         thread_id = GetMessages.route_params.get("threadId")
-        if not project_id or not thread_id:
-            return func.HttpResponse(
-                json.dumps({"error": "Missing 'projectId' or 'threadId' in route parameters."}),
-                status_code=400,
-                mimetype=APPLICATION_JSON
-            )
 
-        # Use the shared validation and existence check
+        # Use the shared validation and existence check (handles all validation)
         try:
             ProjectHandler.check_thread_exists(thread_id, project_id)
         except ValueError as ve:
             return func.HttpResponse(
                 json.dumps({"error": str(ve)}),
-                status_code=400 if "valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
+                status_code=400 if "not a valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
                 mimetype=APPLICATION_JSON
             )
         except Exception as e:
