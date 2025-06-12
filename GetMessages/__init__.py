@@ -41,7 +41,7 @@ def main(GetMessages: func.HttpRequest) -> func.HttpResponse:
             cursor = conn.cursor()
             # Query messages for the given thread
             query = """
-                SELECT [Thread], [Message], [Role], [SYS_INSERT]
+                SELECT [Message], [Role], [SYS_INSERT]
                 FROM [NoteAI].[Messages]
                 WHERE [Thread] = ?
                 ORDER BY [SYS_INSERT] ASC
