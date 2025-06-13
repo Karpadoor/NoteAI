@@ -1,0 +1,44 @@
+[
+    {
+        "id": 0,
+        "key": "name",
+        "title": "What is the name or title of the project?",
+        "description": "Provide the official name or working title of the project.",
+        "rationale": "Establishes a clear identifier for referencing the project in documentation and communication."
+    },
+    {
+        "id": 1,
+        "key": "purpose",
+        "title": "What is the purpose and scope of the project?",
+        "description": "Why does this project exist, what problems does it solve, and what are its main features and boundaries?",
+        "rationale": "Establishes the business context and defines the responsibilities and limitations of the project."
+    },
+    {
+        "id": 2,
+        "key": "stakeholders",
+        "title": "Who are the key stakeholders and users of the project?",
+        "description": "Who uses it, who maintains it, and who makes decisions about it?",
+        "rationale": "Helps identify priorities, expectations, communication channels, and decision-making authority."
+    },
+    {
+        "id": 3,
+        "key": "components",
+        "title": "What are the core technical components and how do they interact?",
+        "description": "What is the architecture of the project, which technologies are used, and how do different modules depend on or talk to each other?",
+        "rationale": "Provides a clear understanding of the system’s structure and is critical for troubleshooting, scaling, or onboarding new developers."
+    },
+    {
+        "id": 4,
+        "key": "lifecycle",
+        "title": "What is the project's lifecycle and how are changes managed?",
+        "description": "What processes govern development, testing, deployment, and versioning? How are changes tracked and approved?",
+        "rationale": "Ensures consistency and quality across environments and helps maintain long-term stability."
+    },
+    {
+        "id": 5,
+        "key": "limitations",
+        "title": "What are the known limitations, issues, and future plans?",
+        "description": "What technical debts, constraints, or open issues exist? What enhancements or roadmap items are planned?",
+        "rationale": "Gives visibility into current challenges and supports long-term planning and risk management."
+    }
+]
