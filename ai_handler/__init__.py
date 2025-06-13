@@ -17,7 +17,7 @@ def send_azure_openai_request(messages, max_completion_tokens=100000, reasoning_
         reasoning_effort (str, optional): Level of reasoning effort for the model ("low", "medium", "high"). Defaults to "medium".
 
     Returns:
-        str: JSON string containing the response from Azure OpenAI, or an error message if the request fails.
+        str: JSON string containing the relevant response fields from Azure OpenAI, or an error message if the request fails.
     """
     try:
         client = openai.AzureOpenAI(
@@ -31,10 +31,18 @@ def send_azure_openai_request(messages, max_completion_tokens=100000, reasoning_
             model=deployment_name,
             messages=messages,
             max_completion_tokens=max_completion_tokens,
-            reasoning_effort = reasoning_effort
+            reasoning_effort=reasoning_effort
         )
 
-        return json.dumps(response.model_dump(), default=str)
+        result = {
+            "content": response.choices[0].message.content if response.choices and response.choices[0].message else None,
+            "model": getattr(response, "model", None),
+            "prompt_tokens": getattr(response.usage, "prompt_tokens", None),
+            "completion_tokens": getattr(response.usage, "completion_tokens", None),
+            "reasoning_tokens": getattr(response.usage.completion_tokens_details, "reasoning_tokens", None)
+        }
+
+        return json.dumps(result, default=str)
     except Exception as e:
         return json.dumps({
             "error": str(e),
