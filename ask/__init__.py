@@ -37,23 +37,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 mimetype=APPLICATION_JSON
             )
 
-        # Use the shared validation and existence check (handles all validation)
         try:
-            project_handler.check_thread_exists(thread_id, project_id)
-        except ValueError as ve:
-            return func.HttpResponse(
-                json.dumps({"error": str(ve)}),
-                status_code=400 if "not a valid GUID" in str(ve) or "must be provided" in str(ve) else 404,
-                mimetype=APPLICATION_JSON
-            )
-
-        try:
-            system_prompt = ai_handler.get_system_prompt("Ask")
+            system_prompt = ai_handler.get_system_prompt("ask")
             memory = memory_handler.get_memory(project_id)
             if memory:
                 system_prompt = f"{system_prompt}\n\nMemory JSON:\n{memory}"
-            messages = chat_handler.get_messages(thread_id)
-            messages.insert(0, {"role": "system", "content": system_prompt})
 
             chat_handler.add_message(
                 thread_id=thread_id,
@@ -68,6 +56,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 source="ask",
                 content=message_content
             )
+
+            messages = chat_handler.get_messages(thread_id)
+            messages.insert(0, {"role": "system", "content": system_prompt})
 
             response_json = ai_handler.send_azure_openai_request(messages=messages)
             # Ensure response_json is a dict
