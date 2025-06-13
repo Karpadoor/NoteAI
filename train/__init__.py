@@ -51,11 +51,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             if isinstance(response_json, str):
                 response_json = json.loads(response_json)
 
-            logging.info(f"Response prompt tokens: {response_json.get('prompt_tokens')}")
-            logging.info(f"Response completion tokens: {response_json.get('completion_tokens')}")
-            logging.info(f"Reasoning tokens: {response_json.get('reasoning_tokens')}")
-
-            memory_handler.set_memory(project_id, json.dumps(response_json.get("content")))
+            memory_handler.set_memory(
+                project_id, 
+                json.dumps(response_json.get("content")),
+                prompt_tokens=response_json.get("prompt_tokens", 0),
+                completion_tokens=response_json.get("completion_tokens", 0),
+                reasoning_tokens=response_json.get("reasoning_tokens", 0)
+            )
 
             return func.HttpResponse(
                 status_code=200,

@@ -34,10 +34,11 @@ def get_memory(project_id):
         logging.error(f"Error fetching memory: {e}")
         raise MemoryHandlerError(f"Error fetching memory: {e}")
     
-def set_memory(project_id, memory_json):
+def set_memory(project_id, memory_json, prompt_tokens=0, completion_tokens=0, reasoning_tokens=0):
     """
     Validate memory_json is valid JSON, then insert a new row into NoteAI.Memory
     with Version = last version for this project + 1.
+    Optionally accepts prompt_tokens, completion_tokens, reasoning_tokens (default 0).
     Raises MemoryHandlerError on failure.
     """
     project_handler.check_project_exists(project_id)
@@ -61,13 +62,14 @@ def set_memory(project_id, memory_json):
             last_version = cursor.fetchone()[0]
             new_version = last_version + 1
 
-            # Insert new row
+            # Insert new row with optional token columns
             cursor.execute(
                 """
-                INSERT INTO [NoteAI].[Memory] ([Project], [Version], [JSON])
-                VALUES (?, ?, ?)
+                INSERT INTO [NoteAI].[Memory] 
+                    ([Project], [Version], [JSON], [PromptTokens], [CompletionTokens], [ReasoningTokens])
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
-                (project_id, new_version, memory_json)
+                (project_id, new_version, memory_json, prompt_tokens, completion_tokens, reasoning_tokens)
             )
             conn.commit()
             logging.info(f"Inserted memory for project {project_id} with version {new_version}")
