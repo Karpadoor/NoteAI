@@ -40,3 +40,30 @@ def send_azure_openai_request(messages, max_completion_tokens=100000, reasoning_
             "error": str(e),
             "message": "Failed to get response from Azure OpenAI."
         })
+    
+def get_system_prompt(system_prompt):
+    """
+    Reads a prompt from a .txt file in the root/system_prompts/ directory and returns it as plain text.
+
+    Args:
+        system_prompt (str): The filename (without extension) of the prompt to load.
+
+    Returns:
+        str: The contents of the prompt file as plain text.
+
+    Raises:
+        FileNotFoundError: If the specified prompt file does not exist.
+        OSError: If there is an error reading the prompt file.
+    """
+    prompt_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "system_prompts",
+        f"{system_prompt}.txt"
+    )
+    try:
+        with open(prompt_path, "r", encoding="utf-8") as file:
+            return file.read()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Prompt file '{prompt_path}' not found.")
+    except Exception as e:
+        raise OSError(f"Error reading prompt file: {e}")
