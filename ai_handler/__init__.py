@@ -7,9 +7,18 @@ AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
 AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT") 
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
 
-# todo: allow passing more messages (dict - chain of messages)
+def send_azure_openai_request(messages, max_completion_tokens=100000, reasoning_effort="medium"):  
+    """
+    Sends a chat completion request to Azure OpenAI using the provided messages.
 
-def send_azure_openai_request(user_prompt, system_instruction, max_tokens=4096, temperature=0.7):
+    Args:
+        messages (list): List of message dictionaries, each with "role" ("system", "user", or "assistant") and "content".
+        max_completion_tokens (int, optional): Maximum number of tokens allowed in the response. Defaults to 100000.
+        reasoning_effort (str, optional): Level of reasoning effort for the model ("low", "medium", "high"). Defaults to "medium".
+
+    Returns:
+        str: JSON string containing the response from Azure OpenAI, or an error message if the request fails.
+    """
     try:
         client = openai.AzureOpenAI(
             api_key=os.getenv("AZURE_OPENAI_KEY"),
@@ -20,12 +29,9 @@ def send_azure_openai_request(user_prompt, system_instruction, max_tokens=4096, 
 
         response = client.chat.completions.create(
             model=deployment_name,
-            messages=[
-                {"role": "system", "content": system_instruction},
-                {"role": "user", "content": user_prompt}
-            ],
-            max_tokens=max_tokens,
-            temperature=temperature,
+            messages=messages,
+            max_completion_tokens=max_completion_tokens,
+            reasoning_effort = reasoning_effort
         )
 
         return json.dumps(response.model_dump(), default=str)
