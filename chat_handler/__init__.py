@@ -22,7 +22,7 @@ def get_messages(thread_id):
             })
     return messages
 
-def add_message(thread_id, model, role, source, content, prompt_tokens=0, completion_tokens=0, reasoning_tokens=0):
+def add_message(thread_id, role, source, content, model=None, prompt_tokens=0, completion_tokens=0, reasoning_tokens=0):
     project_handler.check_thread_exists(thread_id)
     conn_str = project_handler.get_sql_connection_string()
     query = """

@@ -54,10 +54,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             conn.commit()
 
         if new_project_id_row:
-            new_id = new_project_id_row[0]
-            set_memory(new_id, initial_memory)
+            new_project_id = new_project_id_row[0]
+            set_memory(new_project_id, json.dumps(initial_memory))
             return func.HttpResponse(
-                json.dumps({"Project": new_id}),
+                json.dumps({"Project": new_project_id}),
                 status_code=201,
                 mimetype=APPLICATION_JSON
             )
