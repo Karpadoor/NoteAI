@@ -1,0 +1,379 @@
+swagger: '2.0'
+info:
+  title: NoteAI
+  description: Custom connector for accessing NoteAI projects.
+  version: '1.0'
+host: noteai.azurewebsites.net
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /projects:
+    get:
+      summary: Get Projects
+      description: Retrieves the list of projects from the database.
+      operationId: getProjects
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+      responses:
+        '200':
+          description: Successful response with the list of projects.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                ID:
+                  type: string
+                  description: The ID of the project.
+                Name:
+                  type: string
+                  description: The name of the project.
+                Timestamp:
+                  type: string
+                  format: date-time
+                  description: The insertion timestamp of the project.
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Error message.
+  /projects/new:
+    post:
+      summary: Create Project
+      description: Creates a new project.
+      operationId: createProject
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - purpose
+              - stakeholders
+              - components
+              - lifecycle
+              - limitations
+            properties:
+              name:
+                type: string
+              purpose:
+                type: string
+              stakeholders:
+                type: string
+              components:
+                type: string
+              lifecycle:
+                type: string
+              limitations:
+                type: string
+      responses:
+        '201':
+          description: Project created successfully.
+          schema:
+            type: object
+            properties:
+              Project:
+                type: string
+                description: The ID of the created project.
+        '400':
+          description: Missing required fields.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /projects/{projectId}/threads:
+    get:
+      summary: Get Threads
+      description: Retrieves the list of threads for a project.
+      operationId: getThreads
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: The ID of the project.
+      responses:
+        '200':
+          description: Successful response with the list of threads.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                ID:
+                  type: string
+                  description: The ID of the thread.
+                Name:
+                  type: string
+                  description: The name of the thread.
+                Timestamp:
+                  type: string
+                  format: date-time
+                  description: The insertion timestamp of the thread.
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /projects/{projectId}/threads/new:
+    post:
+      summary: Create Thread
+      description: Creates a new thread for a project.
+      operationId: createThread
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: The ID of the project.
+      responses:
+        '201':
+          description: Thread created successfully.
+          schema:
+            type: object
+            properties:
+              Thread:
+                type: string
+                description: The ID of the created thread.
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /projects/{projectId}/threads/{threadId}:
+    get:
+      summary: Get Messages
+      description: Retrieves the list of messages for a thread.
+      operationId: getMessages
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: The ID of the project.
+        - name: threadId
+          in: path
+          required: true
+          type: string
+          description: The ID of the thread.
+      responses:
+        '200':
+          description: Successful response with the list of messages.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                Message:
+                  type: string
+                  description: The message content.
+                Role:
+                  type: string
+                  description: The role of the message sender.
+                Timestamp:
+                  type: string
+                  format: date-time
+                  description: The insertion timestamp of the message.
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /projects/{projectId}/threads/{threadId}/ask:
+    post:
+      summary: Ask a Question
+      description: Sends a question to the assistant for a thread.
+      operationId: askQuestion
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: The ID of the project.
+        - name: threadId
+          in: path
+          required: true
+          type: string
+          description: The ID of the thread.
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - Message
+            properties:
+              Message:
+                type: string
+      responses:
+        '200':
+          description: Successful response with the assistant's answer.
+          schema:
+            type: object
+            properties:
+              response:
+                type: object
+                description: The assistant's response object.
+        '400':
+          description: Missing required fields.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /projects/{projectId}/train:
+    post:
+      summary: Train Project Memory
+      description: Trains the project memory with new knowledge.
+      operationId: trainProject
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+        - name: projectId
+          in: path
+          required: true
+          type: string
+          description: The ID of the project.
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - Message
+            properties:
+              Message:
+                type: string
+      responses:
+        '200':
+          description: Training successful.
+        '400':
+          description: Missing required fields.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /projects/new/questionnaire:
+    get:
+      summary: Get New Project Questionnaire
+      description: Retrieves the set of questions required to create a new project.
+      operationId: getNewProjectQuestionnaire
+      parameters:
+        - name: x-functions-key
+          in: header
+          required: true
+          type: string
+          description: The Azure Functions default key for authentication.
+      responses:
+        '200':
+          description: Successful response with the set of questions.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int32
+                  description: The unique identifier for the question.
+                key:
+                  type: string
+                  description: The field key for the question.
+                title:
+                  type: string
+                  description: The question to be answered.
+                description:
+                  type: string
+                  description: Additional details about the question.
+                rationale:
+                  type: string
+                  description: The reason why this question is required.
+        '500':
+          description: Internal server error.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Error message.
+securityDefinitions:
+  api_key:
+    type: apiKey
+    in: header
+    name: x-functions-key
+security:
+  - api_key: []
+tags:
+  - name: Projects
+    description: Operations related to projects.
