@@ -5,7 +5,7 @@
             "type": "httpTrigger",
             "authLevel": "function",
             "direction": "in",
-            "route": "projects/new",
+            "route": "projects/new/questionnaire",
             "methods": ["get"]
         },
         {
