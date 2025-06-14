@@ -26,6 +26,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 dict(zip(columns, row))
                 for row in cursor.fetchall()
             ]
+            for item in results:
+                if 'SYS_INSERT' in item:
+                    value = item['SYS_INSERT']
+                    if hasattr(value, 'isoformat'):
+                        value = value.isoformat()
+                    item['Timestamp'] = value
+                    del item['SYS_INSERT']
 
         return func.HttpResponse(
             json.dumps(results, default=str, indent=2),
