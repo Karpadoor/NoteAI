@@ -30,7 +30,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             query = """
                 SELECT [Message], [Role], [SYS_INSERT]
                 FROM [NoteAI].[Messages]
-                WHERE [Thread] = ?
+                WHERE [Thread] = ? AND [Role] IN ('user', 'assistant')
                 ORDER BY [SYS_INSERT] ASC
             """
             cursor.execute(query, (thread_id,))
@@ -42,9 +42,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             for item in results:
                 if 'SYS_INSERT' in item:
                     value = item['SYS_INSERT']
-                    if hasattr(value, 'isoformat'):
-                        value = value.isoformat()
-                    item['Timestamp'] = value
+                    if value is not None:
+                        if hasattr(value, 'strftime'):
+                            value = value.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        item['Timestamp'] = value
                     del item['SYS_INSERT']
 
         return func.HttpResponse(
