@@ -29,9 +29,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             for item in results:
                 if 'SYS_INSERT' in item:
                     value = item['SYS_INSERT']
-                    if hasattr(value, 'isoformat'):
-                        value = value.isoformat()
-                    item['Timestamp'] = value
+                    if value is not None:
+                        if hasattr(value, 'strftime'):
+                            value = value.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        item['Timestamp'] = value
                     del item['SYS_INSERT']
 
         return func.HttpResponse(
